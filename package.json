@@ -1,0 +1,21 @@
+{
+  "name": "Clover-Coverage-Enforcer",
+  "version": "1.0.0",
+  "description": "Causes Bamboo to report an error when Clover coverage does not meet quality requirements",
+  "main": "app.js",
+  "author": "Steven Blom <atomicblom@binaryvibrance.net>",
+  "repository": "http://github.com/AtomicBlom/Clover-Coverage-Enforcer",
+  "license": "MIT",
+  "dependencies": {
+    "babel-cli": "^6.4.5",
+    "babel-preset-es2015": "^6.3.13",
+    "dotenv": "^1.2.0",
+    "es6-error": "^2.0.2",
+    "xpath": "0.0.21"
+  },
+  "babel": {
+    "presets": [
+      "babel-preset-es2015"
+    ]
+  }
+}
