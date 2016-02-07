@@ -7,6 +7,7 @@
   "repository": "http://github.com/AtomicBlom/Clover-Coverage-Enforcer",
   "license": "MIT",
   "dependencies": {
+    "command-line-args": "^2.1.4",
     "dotenv": "^1.2.0",
     "xmldom": "^0.1.22",
     "xpath": "0.0.21"
