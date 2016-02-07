@@ -7,16 +7,20 @@
   "repository": "http://github.com/AtomicBlom/Clover-Coverage-Enforcer",
   "license": "MIT",
   "dependencies": {
-    "babel-core": "^6.4.5",
-    "babel-preset-es2015": "^6.3.13",
     "dotenv": "^1.2.0",
-    "es6-error": "^2.0.2",
     "xmldom": "^0.1.22",
     "xpath": "0.0.21"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0"
   },
   "babel": {
     "presets": [
       "babel-preset-es2015"
     ]
+  },
+  "scripts": {
+    "compile": "babel -d lib/ src/"
   }
 }

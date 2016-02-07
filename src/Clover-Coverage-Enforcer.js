@@ -59,6 +59,7 @@ fs.readFile(options.input, 'utf8', (err, data) => {
             console.error("Failed Statement coverage. %d/%d (%d%%) covered. Required %d%%", coveredStatements, totalStatements, percentageCovered, options.statement);
         }
     }
+
     if (options.method !== undefined) {
         var percentageCovered = (coveredMethods / totalMethods) * 100;
         if (percentageCovered < options.method) {
