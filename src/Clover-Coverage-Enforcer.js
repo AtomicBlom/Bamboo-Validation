@@ -28,7 +28,10 @@ if (options.conditional === undefined && options.method === undefined && options
     process.exit(-1);
 }
 
-var content;
+function toTwoDecimalPlaces(input) {
+    return parseFloat(Math.round(input * 100) / 100).toFixed(2);
+}
+
 fs.readFile(options.input, 'utf8', (err, data) => {
     if (err) {
         throw err;
@@ -49,14 +52,14 @@ fs.readFile(options.input, 'utf8', (err, data) => {
         var percentageCovered = (coveredConditionals / totalConditionals) * 100;
         if (percentageCovered < options.conditional) {
             passed = false;
-            console.error("Failed Conditional coverage. %d/%d (%d%%) covered. Required %d%%", coveredConditionals, totalConditionals, percentageCovered, options.conditional);
+            console.error("Failed Conditional coverage. %d/%d (%d%%) covered. Required %d%%", coveredConditionals, totalConditionals, toTwoDecimalPlaces(percentageCovered), options.conditional);
         }
     }
     if (options.statement !== undefined) {
         var percentageCovered = (coveredStatements / totalStatements) * 100;
         if (percentageCovered < options.statement) {
             passed = false;
-            console.error("Failed Statement coverage. %d/%d (%d%%) covered. Required %d%%", coveredStatements, totalStatements, percentageCovered, options.statement);
+            console.error("Failed Statement coverage. %d/%d (%d%%) covered. Required %d%%", coveredStatements, totalStatements, toTwoDecimalPlaces(percentageCovered), options.statement);
         }
     }
 
@@ -64,7 +67,7 @@ fs.readFile(options.input, 'utf8', (err, data) => {
         var percentageCovered = (coveredMethods / totalMethods) * 100;
         if (percentageCovered < options.method) {
             passed = false;
-            console.error("Failed Method coverage. %d/%d (%d%%) covered. Required %d%%", coveredMethods, totalMethods, percentageCovered, options.method);
+            console.error("Failed Method coverage. %d/%d (%d%%) covered. Required %d%%", coveredMethods, totalMethods, toTwoDecimalPlaces(percentageCovered), options.method);
         }
     }
 
