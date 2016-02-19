@@ -3,7 +3,7 @@ import fs from 'fs';
 import util from 'util';
 import optionator from 'optionator';
 import CloverCoverage from './validators/clover.js'
-import {EXIT_CODE_PASSED, EXIT_CODE_FAILED, EXIT_CODE_BAD_ARGUMENTS} from '.'
+import exitcodes from './exitcodes'
 
 let validatorFactories = [new CloverCoverage()];
 let optionList = [];
@@ -30,39 +30,42 @@ let options = optionator({
 let programArgs = options.parseArgv(process.argv);
 if (programArgs.propertiesFile === undefined || programArgs.propertiesFile == "") {
     console.log(options.generateHelp());
-    process.exit(EXIT_CODE_BAD_ARGUMENTS);
+    process.exit(exitcodes.EXIT_CODE_BAD_ARGUMENTS);
 }
 
 let validatorSelected = false;
 const propertiesFile = {};
-let finalExitCode = EXIT_CODE_PASSED;
+let finalExitCode = exitcodes.EXIT_CODE_PASSED;
 for (let validatorFactory of validatorFactories) {
     let validator = validatorFactory.buildValidator(programArgs);
     if (validator.isSelected()) {
         validatorSelected = true;
-        [properties, exitCode] = validator.act();
-        if (exitCode == EXIT_CODE_BAD_ARGUMENTS) {
+        let result = validator.act();
+        console.log("validator returned " + result.exitCode);
+        if (result.exitCode == exitcodes.EXIT_CODE_BAD_ARGUMENTS) {
             console.log(options.generateHelp());
-            process.exit(exitCode);
+            process.exit(result.exitCode);
         }
-        finalExitCode = Math.min(finalExitCode, exitCode);
-        Object.assign(propertiesFile, properties);
+        finalExitCode = Math.min(finalExitCode, result.exitCode);
+        Object.assign(propertiesFile, result.properties);
     }
 }
 
 if (!validatorSelected) {
     console.error("No validators have been run.");
     console.log(options.generateHelp());
-    process.exit(EXIT_CODE_BAD_ARGUMENTS);
+    process.exit(exitcodes.EXIT_CODE_BAD_ARGUMENTS);
 }
 
+console.log(propertiesFile);
+
 let propertiesFileText = "";
-for (let [key, value] in propertiesFile) {
-    propertiesFileText += key + "=" + value;
+for (let key in propertiesFile) {
+    propertiesFileText += key + "=" + propertiesFile[key] + "\r\n";
 }
 
 fs.writeFileSync(programArgs.propertiesFile, propertiesFileText);
-if (finalExitCode == EXIT_CODE_PASSED) {
+if (finalExitCode == exitcodes.EXIT_CODE_PASSED) {
     console.log("Validation passed");
 }
 process.exit(finalExitCode);

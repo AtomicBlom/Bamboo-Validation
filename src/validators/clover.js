@@ -1,5 +1,9 @@
 import fs from 'fs';
-import {EXIT_CODE_PASSED, EXIT_CODE_FAILED, EXIT_CODE_BAD_ARGUMENTS} from '../constants'
+import xpath from 'xpath';
+import {DOMParser} from 'xmldom';
+import exitCodes from '../exitcodes'
+import util from 'util'
+import stringFormat from 'string-format-js'
 
 export default class {
     getOptionConfiguration() {
@@ -34,11 +38,6 @@ export default class {
 }
 
 class CloverValidator {
-    /*var cloverFile;
-    var conditional;
-    var method;
-    va1*r statement;*/
-
     constructor(options) {
         this.cloverFile = options.clover;
         this.conditional = options.cloverConditionals || process.env.BAMBOO_CONDITIONAL_REQUIREMENT;
@@ -61,16 +60,17 @@ class CloverValidator {
                 CLOVER_STATEMENTS_ENABLED: false,
                 CLOVER_STATEMENTS_RESULT: "(0/0) 0%"
             },
-            exitCode: EXIT_CODE_PASSED
+            exitCode: exitCodes.EXIT_CODE_PASSED
         };
 
         if (this.conditional === undefined && this.method === undefined && this.statement === undefined) {
             console.error("No coverage requirements specified.");
-            results.exitCode = EXIT_CODE_BAD_ARGUMENTS;
+            results.exitCode = exitCodes.EXIT_CODE_BAD_ARGUMENTS;
+            console.log("Exiting");
             return results;
         }
 
-        let data = fs.readFileSync(options.input, 'utf8');
+        let data = fs.readFileSync(this.cloverFile, 'utf8');
 
         let doc = new DOMParser().parseFromString(data);
         let projectMetrics = xpath.select("/coverage/project/metrics", doc)[0];
@@ -82,39 +82,52 @@ class CloverValidator {
         let coveredMethods = projectMetrics.getAttribute("coveredmethods");
 
         let passed = true;
+        let percentageCovered;
 
-        if (options.conditional !== undefined) {
-            let percentageCovered = (coveredConditionals / totalConditionals) * 100;
-            if (percentageCovered < options.conditional) {
+        percentageCovered = (coveredConditionals / totalConditionals) * 100;
+        results.properties.CLOVER_CONDITIONALS_RESULT = "Conditional coverage %d/%d (%.2f%) covered".format(coveredConditionals, totalConditionals, percentageCovered);
+        if (this.conditional !== undefined) {
+            results.properties.CLOVER_CONDITIONALS_RESULT += ", required %d%".format(this.conditional);
+            results.properties.CLOVER_CONDITIONALS_ENABLED = true;
+
+            if (percentageCovered < this.conditional) {
                 passed = false;
-                results.properties.CLOVER_CONDITIONALS_RESULT = util.format("Failed Conditional coverage. %d/%d (%d%%) covered. Required %d%%", coveredConditionals, totalConditionals, percentageCovered, options.conditional);
                 console.error(results.properties.CLOVER_CONDITIONALS_RESULT);
             }
         }
-        if (options.statement !== undefined) {
-            let percentageCovered = (coveredStatements / totalStatements) * 100;
-            if (percentageCovered < options.statement) {
+
+        percentageCovered = (coveredStatements / totalStatements) * 100;
+        results.properties.CLOVER_STATEMENTS_RESULT = "Statement coverage %d/%d (%.2f%) covered".format(coveredStatements, totalStatements, percentageCovered);
+        if (this.statement !== undefined) {
+            results.properties.CLOVER_STATEMENTS_RESULT += ", required %d%".format(this.statement);
+            results.properties.CLOVER_STATEMENTS_ENABLED = true;
+
+            if (percentageCovered < this.statement) {
                 passed = false;
-                results.properties.CLOVER_STATEMENTS_RESULT = util.format("Failed Statement coverage. %d/%d (%d%%) covered. Required %d%%", coveredStatements, totalStatements, percentageCovered, options.statement);
-                console.error(results.properties.CLOVER_STATEMENTS_RESULT);
-            }
-        }
-        if (options.method !== undefined) {
-            let percentageCovered = (coveredMethods / totalMethods) * 100;
-            if (percentageCovered < options.method) {
-                passed = false;
-                results.properties.CLOVER_STATEMENTS_RESULT = util.format("Failed Method coverage. %d/%d (%d%%) covered. Required %d%%", coveredMethods, totalMethods, percentageCovered, options.method);
                 console.error(results.properties.CLOVER_STATEMENTS_RESULT);
             }
         }
 
-        results.properties["CLOVER_PASSED"] = passed;
+        percentageCovered = (coveredMethods / totalMethods) * 100;
+        results.properties.CLOVER_METHODS_RESULT = "Method coverage %d/%d (%.2f%) covered".format(coveredMethods, totalMethods, percentageCovered);
+        if (this.method !== undefined) {
+            results.properties.CLOVER_METHODS_RESULT += ", required %d%".format(this.method);
+            results.properties.CLOVER_METHODS_ENABLED = true;
+
+            if (percentageCovered < this.method) {
+                passed = false;
+                console.error(results.properties.CLOVER_METHODS_RESULT);
+            }
+        }
+
+        results.properties.CLOVER_PASSED = passed;
 
         if (passed) {
             console.info("Code coverage passed.");
         } else {
             console.info("Code coverage failed.");
-            results.exitCode = EXIT_CODE_FAILED;
+            results.exitCode = exitCodes.EXIT_CODE_FAILED;
         }
+        return results;
     }
 }

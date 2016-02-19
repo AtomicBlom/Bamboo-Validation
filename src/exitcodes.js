@@ -1,0 +1,5 @@
+export default {
+    EXIT_CODE_PASSED: 0,
+    EXIT_CODE_FAILED: -1,
+    EXIT_CODE_BAD_ARGUMENTS: -32768
+};
