@@ -1,1 +1,6 @@
+.idea
+.npmignore
 src
+*.properties
+*.xml
+*.tgz

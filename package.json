@@ -1,10 +1,10 @@
 {
-  "name": "Clover-Coverage-Enforcer",
-  "version": "1.0.0",
-  "description": "Causes Bamboo to report an error when Clover coverage does not meet quality requirements",
+  "name": "bamboo-validation",
+  "version": "1.1.0",
+  "description": "Exports test and coverage results to a .properties file for consumption in bamboo",
   "main": "index.js",
   "author": "Steven Blom <atomicblom@binaryvibrance.net>",
-  "repository": "http://github.com/AtomicBlom/Clover-Coverage-Enforcer",
+  "repository": "http://github.com/AtomicBlom/Bamboo-Validation.git",
   "license": "MIT",
   "dependencies": {
     "babel-polyfill": "^6.5.0",
