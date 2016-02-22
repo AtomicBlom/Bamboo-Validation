@@ -54,11 +54,14 @@ class CloverValidator {
             properties: {
                 CLOVER_PASSED: true,
                 CLOVER_CONDITIONALS_ENABLED: false,
-                CLOVER_CONDITIONALS_RESULT: "(0/0) 0%",
+                CLOVER_CONDITIONALS_PASSED: 'na',
+                CLOVER_CONDITIONALS_RESULT_TEXT: "(0/0) 0%",
                 CLOVER_METHODS_ENABLED: false,
-                CLOVER_METHODS_RESULT: "(0/0) 0%",
+                CLOVER_METHODS_PASSED: 'na',
+                CLOVER_METHODS_RESULT_TEXT: "(0/0) 0%",
                 CLOVER_STATEMENTS_ENABLED: false,
-                CLOVER_STATEMENTS_RESULT: "(0/0) 0%"
+                CLOVER_STATEMENTS_PASSED: 'na',
+                CLOVER_STATEMENTS_RESULT_TEXT: "(0/0) 0%"
             },
             exitCode: exitCodes.EXIT_CODE_PASSED
         };
@@ -85,38 +88,41 @@ class CloverValidator {
         let percentageCovered;
 
         percentageCovered = (coveredConditionals / totalConditionals) * 100;
-        results.properties.CLOVER_CONDITIONALS_RESULT = "Conditional coverage %d/%d (%.2f%) covered".format(coveredConditionals, totalConditionals, percentageCovered);
+        results.properties.CLOVER_CONDITIONALS_RESULT_TEXT = "%d/%d (%.2f%)".format(coveredConditionals, totalConditionals, percentageCovered);
         if (this.conditional !== undefined) {
-            results.properties.CLOVER_CONDITIONALS_RESULT += ", required %d%".format(this.conditional);
+            results.properties.CLOVER_CONDITIONALS_RESULT_TEXT += ", required %d%".format(this.conditional);
             results.properties.CLOVER_CONDITIONALS_ENABLED = true;
 
-            if (percentageCovered < this.conditional) {
+            results.properties.CLOVER_CONDITIONALS_PASSED = (percentageCovered < this.conditional);
+            if (results.properties.CLOVER_CONDITIONALS_PASSED) {
                 passed = false;
-                console.error(results.properties.CLOVER_CONDITIONALS_RESULT);
+                console.error(results.properties.CLOVER_CONDITIONALS_RESULT_TEXT);
             }
         }
 
         percentageCovered = (coveredStatements / totalStatements) * 100;
-        results.properties.CLOVER_STATEMENTS_RESULT = "Statement coverage %d/%d (%.2f%) covered".format(coveredStatements, totalStatements, percentageCovered);
+        results.properties.CLOVER_STATEMENTS_RESULT_TEXT = "%d/%d (%.2f%)".format(coveredStatements, totalStatements, percentageCovered);
         if (this.statement !== undefined) {
-            results.properties.CLOVER_STATEMENTS_RESULT += ", required %d%".format(this.statement);
+            results.properties.CLOVER_STATEMENTS_RESULT_TEXT += ", required %d%".format(this.statement);
             results.properties.CLOVER_STATEMENTS_ENABLED = true;
 
-            if (percentageCovered < this.statement) {
+            results.properties.CLOVER_STATEMENTS_PASSED = (percentageCovered < this.statement);
+            if (results.properties.CLOVER_STATEMENTS_PASSED) {
                 passed = false;
-                console.error(results.properties.CLOVER_STATEMENTS_RESULT);
+                console.error(results.properties.CLOVER_STATEMENTS_RESULT_TEXT);
             }
         }
 
         percentageCovered = (coveredMethods / totalMethods) * 100;
-        results.properties.CLOVER_METHODS_RESULT = "Method coverage %d/%d (%.2f%) covered".format(coveredMethods, totalMethods, percentageCovered);
+        results.properties.CLOVER_METHODS_RESULT_TEXT = "%d/%d (%.2f%)".format(coveredMethods, totalMethods, percentageCovered);
         if (this.method !== undefined) {
-            results.properties.CLOVER_METHODS_RESULT += ", required %d%".format(this.method);
+            results.properties.CLOVER_METHODS_RESULT_TEXT += ", required %d%".format(this.method);
             results.properties.CLOVER_METHODS_ENABLED = true;
 
+            results.properties.CLOVER_METHODS_PASSED = (percentageCovered < this.method);
             if (percentageCovered < this.method) {
                 passed = false;
-                console.error(results.properties.CLOVER_METHODS_RESULT);
+                console.error(results.properties.CLOVER_METHODS_RESULT_TEXT);
             }
         }
 
