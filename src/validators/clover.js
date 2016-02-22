@@ -93,8 +93,8 @@ class CloverValidator {
             results.properties.CLOVER_CONDITIONALS_RESULT_TEXT += ", required %d%".format(this.conditional);
             results.properties.CLOVER_CONDITIONALS_ENABLED = true;
 
-            results.properties.CLOVER_CONDITIONALS_PASSED = (percentageCovered < this.conditional);
-            if (results.properties.CLOVER_CONDITIONALS_PASSED) {
+            results.properties.CLOVER_CONDITIONALS_PASSED = (percentageCovered >= this.conditional);
+            if (!results.properties.CLOVER_CONDITIONALS_PASSED) {
                 passed = false;
                 console.error(results.properties.CLOVER_CONDITIONALS_RESULT_TEXT);
             }
@@ -106,8 +106,8 @@ class CloverValidator {
             results.properties.CLOVER_STATEMENTS_RESULT_TEXT += ", required %d%".format(this.statement);
             results.properties.CLOVER_STATEMENTS_ENABLED = true;
 
-            results.properties.CLOVER_STATEMENTS_PASSED = (percentageCovered < this.statement);
-            if (results.properties.CLOVER_STATEMENTS_PASSED) {
+            results.properties.CLOVER_STATEMENTS_PASSED = (percentageCovered >= this.statement);
+            if (!results.properties.CLOVER_STATEMENTS_PASSED) {
                 passed = false;
                 console.error(results.properties.CLOVER_STATEMENTS_RESULT_TEXT);
             }
@@ -119,8 +119,8 @@ class CloverValidator {
             results.properties.CLOVER_METHODS_RESULT_TEXT += ", required %d%".format(this.method);
             results.properties.CLOVER_METHODS_ENABLED = true;
 
-            results.properties.CLOVER_METHODS_PASSED = (percentageCovered < this.method);
-            if (percentageCovered < this.method) {
+            results.properties.CLOVER_METHODS_PASSED = (percentageCovered >= this.method);
+            if (!results.properties.CLOVER_METHODS_PASSED) {
                 passed = false;
                 console.error(results.properties.CLOVER_METHODS_RESULT_TEXT);
             }

@@ -1,6 +1,6 @@
 {
   "name": "bamboo-validation",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Exports test and coverage results to a .properties file for consumption in bamboo",
   "main": "index.js",
   "author": "Steven Blom <atomicblom@binaryvibrance.net>",
